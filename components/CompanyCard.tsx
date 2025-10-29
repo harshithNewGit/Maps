@@ -7,13 +7,16 @@ interface CompanyCardProps {
 
 const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-200">
-      <h3 className="text-lg font-semibold text-blue-300">{company.title}</h3>
+    <div className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-200 flex flex-col justify-between h-full">
+      <div>
+        <h3 className="text-lg font-semibold text-blue-300">{company.title}</h3>
+        <p className="text-sm text-gray-400 mt-1">{company.address}</p>
+      </div>
       <a
         href={company.uri}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline mt-2 inline-flex items-center"
+        className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline mt-2 inline-flex items-center self-start"
       >
         View on Google Maps
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

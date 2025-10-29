@@ -4,11 +4,13 @@ interface MapSelectorProps {
   onAreaSelect: (lat: number, lng: number) => void;
   latitude: number;
   longitude: number;
+  radiusKm: number;
 }
 
-const MapSelector: React.FC<MapSelectorProps> = ({ onAreaSelect, latitude, longitude }) => {
+const MapSelector: React.FC<MapSelectorProps> = ({ onAreaSelect, latitude, longitude, radiusKm }) => {
   const mapRef = useRef<any>(null);
-  const drawnItemsRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const circleRef = useRef<any>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,59 +26,41 @@ const MapSelector: React.FC<MapSelectorProps> = ({ onAreaSelect, latitude, longi
         maxZoom: 20
       }).addTo(map);
       
-      const drawnItems = new L.FeatureGroup();
-      map.addLayer(drawnItems);
-      drawnItemsRef.current = drawnItems;
-
-      const drawControl = new L.Control.Draw({
-        edit: {
-          featureGroup: drawnItems,
-          remove: true,
-        },
-        draw: {
-          polygon: {
-            allowIntersection: false,
-            shapeOptions: {
-              color: '#2dd4bf'
-            },
-          },
-          rectangle: {
-            shapeOptions: {
-              color: '#2dd4bf'
-            }
-          },
-          polyline: false,
-          circle: false,
-          marker: false,
-          circlemarker: false,
-        }
-      });
-      map.addControl(drawControl);
-
-      map.on(L.Draw.Event.CREATED, (event: any) => {
-        const layer = event.layer;
-        drawnItems.clearLayers();
-        drawnItems.addLayer(layer);
-
-        const center = layer.getBounds().getCenter();
-        onAreaSelect(center.lat, center.lng);
-      });
-      
-      map.on(L.Draw.Event.EDITED, (event: any) => {
-        const layers = event.layers;
-        layers.eachLayer((layer: any) => {
-            const center = layer.getBounds().getCenter();
-            onAreaSelect(center.lat, center.lng);
-        });
+      map.on('click', (event: any) => {
+        onAreaSelect(event.latlng.lat, event.latlng.lng);
       });
     }
   }, []);
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setView([latitude, longitude], mapRef.current.getZoom() || 13);
+      const map = mapRef.current;
+      const center: [number, number] = [latitude, longitude];
+      
+      // Update marker
+      if (!markerRef.current) {
+        markerRef.current = L.marker(center).addTo(map);
+      } else {
+        markerRef.current.setLatLng(center);
+      }
+      
+      // Update circle
+      const radiusMeters = radiusKm * 1000;
+      if (!circleRef.current) {
+        circleRef.current = L.circle(center, {
+          radius: radiusMeters,
+          color: '#2dd4bf',
+          fillColor: '#2dd4bf',
+          fillOpacity: 0.1,
+          weight: 2,
+        }).addTo(map);
+      } else {
+        circleRef.current.setLatLng(center).setRadius(radiusMeters);
+      }
+
+      map.setView(center, map.getZoom() || 13);
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, radiusKm]);
 
   return <div ref={mapContainerRef} className="h-full w-full" />;
 };

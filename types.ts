@@ -4,6 +4,7 @@ declare global {
 
 export interface Company {
   title: string;
+  address: string;
   uri: string;
 }
 

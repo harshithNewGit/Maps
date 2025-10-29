@@ -1,0 +1,7 @@
+{
+  "name": "Geo-Industry Finder",
+  "description": "Find companies in a specific industry based on your selected geolocation using the Gemini API with Google Maps Grounding for up-to-date, accurate information.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

@@ -13,7 +13,7 @@ export async function findCompanies(
 
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  const prompt = `Find all significant and well-established companies in the "${industry}" sector within a ${radiusInKm} kilometer radius of this location. For each company, provide its full name and complete street address. Prioritize corporate headquarters or major regional offices, and avoid listing smaller branches or local outlets.`;
+  const prompt = `Find up to 100 significant and well-established companies in the "${industry}" sector within a ${radiusInKm} kilometer radius of this location. For each company, provide its full name and complete street address. Prioritize corporate headquarters or major regional offices, and avoid listing smaller branches or local outlets.`;
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
